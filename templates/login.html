@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Страница входа</title>
+</head>
+<body>
+<form method="POST" action="authentificate">
+    {% csrf_token %}
+    <p><b>Логин:</b></p>
+    <input type="text" id="login">
+    <p><b>Пароль:</b></p>
+    <input type="password" id="password">
+    <!--    <table>-->
+    <!--        <button type="submit" class="but">Войти</button>-->
+    <!--    </table>-->
+    <p>
+        <button type="submit" class="but">Войти</button>
+    </p>
+    {% if is_try_again %}
+    <p style="color: red">Логин и пароль были введены неправильно. Повторите
+        ввод</p>
+    {% endif %}
+</body>
+</html>
