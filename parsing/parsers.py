@@ -136,17 +136,10 @@ class SeleniumPageParser(PageParser):
         elem = self.get_page_elem(self.site.photo_src)
         return elem.get_attribute(attr)
 
-    # def get_elem_by_id(self, id):
-    #     return self.driver.find_element_by_id(id)
-    #
-    # def get_elem_by_class(self, id):
-    #     return self.driver.find_elements_by_class_name(id)
-    #
-    # def get_elem_by_xpath(self, id):
-    #     return self.driver.find_element_by_xpath(id)
-
 
 class PhotoDownloader:
+    """Класс, отвечающий за загрузку изображения по ссылке"""
+
     photo_url = None
 
     def __init__(self, url=None):
@@ -161,11 +154,14 @@ class PhotoDownloader:
                 return f
         return None
 
+    @staticmethod
     def get_file_name(self, img_format):
         return GOODS_IMAGE_PATH + f'img_{random.randint(100, 10 ** 6)}.{img_format}'
 
-    def download(self):
-        success = False
+    def _download(self):
+        """Загружает изображение по ссылке и возвращает 2 значения:
+        признак успешного завершения и путь до файла, если не было ошибок"""
+
         try:
             img = requests.get(self.photo_url)
             image_format = self.get_file_format(self.photo_url)
@@ -174,10 +170,12 @@ class PhotoDownloader:
             file_name = self.get_file_name(image_format)
             with open(file_name, "wb") as out:
                 out.write(img.content)
-            success = True
+            return True, file_name
         except Exception as e:
             print(f'Произошла ошибка при загрузке и сохранении картинки: {e}')
-        if success:
-            return file_name
-        else:
-            return DEFAULT_IMG_PATH
+            return False, None
+
+    def download(self):
+        success, file_name = self._download()
+        photo_path = file_name if success else DEFAULT_IMG_PATH
+        return photo_path
