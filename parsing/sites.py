@@ -1,10 +1,7 @@
 from urllib.parse import urlparse
 from abc import ABCMeta, abstractmethod
-from cached_property import cached_property
 
-from parsing.constants import TypeAndId
-from parsing.constants import PageParserEnum
-from parsing.constants import IdentifierEnum
+from .constants import IdentifierEnum,TypeAndId, PageParserEnum
 
 
 def get_only_digits(string):

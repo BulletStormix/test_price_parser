@@ -1,7 +1,7 @@
-from time import sleep
 import os
 import requests
 import random
+from time import sleep
 
 from abc import ABCMeta, abstractmethod
 from bs4 import BeautifulSoup
@@ -11,7 +11,7 @@ from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from urllib.parse import urlparse
 
 from config.settings import BASE_DIR
-from parsing.sites import SiteParsing
+from .sites import SiteParsing
 from .constants import IdentifierEnum, PageParserEnum, GOODS_IMAGE_PATH, DEFAULT_IMG_PATH
 
 
