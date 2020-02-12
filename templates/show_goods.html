@@ -27,7 +27,7 @@ width: 100%;
     {% for site in sites %}
     <tr>
         <td><img style="height:40px;" src="{{site.photo_path}}""></td>
-        <td>{{ site.url }}</td>
+        <td><a href="{{ site.url }}">{{ site.url }}</a></td>
         <td>{{ site.price_rub }}</td>
         <td>
             {% if not site.is_running %}
