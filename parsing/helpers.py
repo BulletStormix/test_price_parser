@@ -3,8 +3,8 @@ from datetime import datetime
 
 from . import models
 from . import forms
-from . import sites
 from .constants import DEFAULT_IMG_PATH
+from .parsers import Parsing
 
 
 def get_sites_and_url_form():
@@ -52,19 +52,6 @@ def calculate_time(fun):
     return calculate
 
 
-@calculate_time
-def parse_site(url):
-    site = None
-    try:
-        site = sites.SiteParsing.get_site(url)
-        return site.price, site.photo_name
-    except Exception as e:
-        print(e)
-        if site and site.parser:
-            site.parser.close()
-        return None, None
-
-
 def price_task(site_id):
     try:
         site = models.Site.objects.get(id=site_id)
@@ -78,7 +65,7 @@ def price_task(site_id):
     print(f'Задача обновления данных сайта (id={site_id}) была запущена!')
     models.Site.objects.filter(id=site_id).update(is_running=True)
     try:
-        price, photo_name = parse_site(site.url)
+        price, photo_name = Parsing(site.url).parse_data()
         site.add_price_and_photo(price, photo_name)
     except Exception as e:
         print(f'Произошла ошибка при обновлении данных сайта (id={site_id}). {e}')
