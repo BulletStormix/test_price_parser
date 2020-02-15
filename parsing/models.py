@@ -1,11 +1,8 @@
-from django.utils import timezone
 import pytz
 
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.db import models, transaction
-
-# from parsing.constants import Identifier
-# from parsing.constants import PageParser
 
 
 class Site(models.Model):
@@ -31,7 +28,7 @@ class Site(models.Model):
             return True
         else:
             print(f'Цена - {price}  и фото - {photoname} '
-                  'не были добавлены для сайта (id={id})')
+                  f'не были добавлены для сайта (id={self.id})')
             return False
 
     @classmethod

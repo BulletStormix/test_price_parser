@@ -1,0 +1,35 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+.container{min-height: 100%;}
+.container div{
+    position: absolute;
+    top: 50%;
+    width:50%;
+    margin-top: -29px;
+}
+#add_ref{
+    left:0px;
+}
+#goods{
+    left:50%;
+}
+#a_goods{
+    background: rgb(99, 99, 255);
+}
+#a_add_ref{
+    background: rgb(247, 104, 104);
+}
+a{
+    display: block;
+    text-decoration: none;
+    text-align: center;
+    font-size: 50px;
+    color: black;
+    width:70%;
+    margin:auto;
+    border: 5px solid black;
+}
