@@ -1,10 +1,10 @@
-from enum import Enum
+import os
 from collections import namedtuple
 
+from config.settings import GOODS_IMAGE_PATH
 
 PRICE_NOT_FOUNDED = 'Цена не найдена'
-GOODS_IMAGE_PATH = 'static/goods_images/'
-DEFAULT_IMG_PATH = GOODS_IMAGE_PATH + 'default.jpg'
+DEFAULT_IMG_PATH = os.path.join(GOODS_IMAGE_PATH, 'default.jpg')
 link_to_index_page = "<a href='/'>Вернуться на главную страницу</a>"
 
 

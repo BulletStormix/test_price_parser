@@ -125,3 +125,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+
+# Настройки для parsing
+GOODS_IMAGE_PATH = os.path.join(BASE_DIR, "static", 'goods_images')
