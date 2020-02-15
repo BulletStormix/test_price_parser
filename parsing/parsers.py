@@ -10,7 +10,7 @@ from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from urllib.parse import urlparse
 
-from config.settings import BASE_DIR
+from config.settings import ADDITIONAL_FILES_DIR
 from .sites import SiteParsing
 from .constants import IdentifierEnum, PageParserEnum, GOODS_IMAGE_PATH, DEFAULT_IMG_PATH
 
@@ -108,12 +108,14 @@ class SeleniumPageParser(PageParser):
             Chrome: dict(
                 webdriver_class=webdriver.Chrome,
                 option_class=ChromeOptions,
-                path=r'{}'.format(os.path.join(BASE_DIR, 'chromedriver.exe'))
+                path=r'{}'.format(os.path.join(ADDITIONAL_FILES_DIR,
+                                               'chromedriver.exe'))
             ),
             Firefox: dict(
                 webdriver_class=webdriver.Firefox,
                 option_class=FirefoxOptions,
-                path=r'{}'.format(os.path.join(BASE_DIR, 'geckodriver.exe'))
+                path=r'{}'.format(os.path.join(ADDITIONAL_FILES_DIR,
+                                               'geckodriver.exe'))
             )
         }
 
