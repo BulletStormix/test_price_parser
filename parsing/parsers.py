@@ -11,6 +11,7 @@ from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from urllib.parse import urlparse
 
 from config.settings import ADDITIONAL_FILES_DIR
+from parsing.exceptions import UnsupportedFileFormat, FileNotDownloaded
 from .sites import SiteParsing
 from .constants import IdentifierEnum, PageParserEnum, GOODS_IMAGE_PATH, DEFAULT_IMG_PATH
 
@@ -199,44 +200,75 @@ class PhotoDownloader:
     """Класс, отвечающий за загрузку изображения по ссылке"""
 
     photo_url = None
+    supported_formats = ['jpg', 'png', 'jpeg']
 
     def __init__(self, url=None):
         self.photo_url = url
 
-    @staticmethod
-    def get_file_format(url):
-        formats = ['jpg', 'png', 'jpeg']
-        url = urlparse(url).path
-        for f in formats:
-            if url.endswith(f):
+    def get_file_format(self):
+        """Получает расширение файла изображения для дальнейшей обработки
+        :raise: FileNotDownloaded, UnsupportedFileFormat
+        """
+        url_path = urlparse(self.photo_url).path
+        if not url_path:
+            raise FileNotDownloaded('Ссылка на изображение некорректна!')
+        for f in self.supported_formats:
+            if url_path.endswith(f):
                 return f
-        return None
+        raise UnsupportedFileFormat('Неподдерживаемый тип файла!')
 
     @staticmethod
-    def get_file_name(img_format):
-        return GOODS_IMAGE_PATH + f'img_{random.randint(100, 10 ** 6)}.{img_format}'
+    def generate_file_name(img_format):
+        """Генерирует имя файла изображения, проверяет, что имя уникально
+        :param img_format: Расширение файла изображения
+        """
+        is_unique = False
+        file_name = None
+        while not is_unique:
+            random_num = random.randint(100, 10 ** 6)
+            file_name = os.path.join(
+                GOODS_IMAGE_PATH, f'img_{random_num}.{img_format}')
+            is_unique = not os.path.exists(file_name)
+        return file_name
+
+    def get_file_name(self):
+        """Определяет формат изображения и возвращает путь к новому файлу"""
+        image_format = self.get_file_format()
+        file_name = self.generate_file_name(image_format)
+        return file_name
 
     def _download(self):
         """Загружает изображение по ссылке и возвращает 2 значения:
-        признак успешного завершения и путь до файла, если не было ошибок"""
+        признак успешного завершения и путь до файла, если не было ошибок
+        :raise: FileNotDownloaded"""
 
+        img = requests.get(self.photo_url)
+        if img.status_code != 200 or not img.content:
+            raise FileNotDownloaded('Ссылка на изображение некорректна!')
+        file_name = self.get_file_name()
         try:
-            img = requests.get(self.photo_url)
-            image_format = self.get_file_format(self.photo_url)
-            if image_format is None:
-                return DEFAULT_IMG_PATH
-            file_name = self.get_file_name(image_format)
             with open(file_name, "wb") as out:
                 out.write(img.content)
             return True, file_name
         except Exception as e:
-            print(f'Произошла ошибка при загрузке и сохранении картинки: {e}')
+            print(f'Произошла ошибка при сохранении картинки: {e}')
             return False, None
 
     def download(self):
-        if self.photo_url is None:
-            print('Нет ссылки на изображение. Изображение не будет загружено!')
-            return None
-        success, file_name = self._download()
+        """Скачивает изображение по ссылке и возвращает признак успешного
+        завершения и путь до файла, если не было ошибок.
+        Если были ошибки, возвращает False и путь до дефолтного изображения
+        """
+        success = False
+        file_name = None
+
+        try:
+            if not self.photo_url:
+                raise FileNotDownloaded('Не указана ссылка на изображение!')
+            success, file_name = self._download()
+        except (UnsupportedFileFormat, FileNotDownloaded,
+                requests.RequestException) as e:
+            print(e)
+
         photo_path = file_name if success else DEFAULT_IMG_PATH
-        return photo_path
+        return success, photo_path

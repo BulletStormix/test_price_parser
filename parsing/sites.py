@@ -53,7 +53,7 @@ class Wildberries(SiteParsing):
     def process_photo_element(self, element):
         from parsing.parsers import PhotoDownloader
         photo_url = element.get_attribute('href')
-        return PhotoDownloader(photo_url).download()
+        return PhotoDownloader(photo_url).download()[1]
 
 
 class Lamoda(SiteParsing):
@@ -75,7 +75,7 @@ class Lamoda(SiteParsing):
         from parsing.parsers import PhotoDownloader
         photo_elem = element[0]
         photo_url = photo_elem.get_attribute('src')
-        return PhotoDownloader(photo_url).download()
+        return PhotoDownloader(photo_url).download()[1]
 
 
 all_sites = [
