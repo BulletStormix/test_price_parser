@@ -4,12 +4,13 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.db import models, transaction
 
+from parsing.constants import TASK_TIMEOUT
+
 
 class Site(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sites')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='site')
     url = models.URLField()
     photo_path = models.CharField(max_length=200, null=True, blank=True)
-    is_running = models.BooleanField(default=False)
 
     def get_prices(self):
         return Price.objects.filter(site=self).order_by('-date')
@@ -44,11 +45,24 @@ class Site(models.Model):
     @classmethod
     def delete_by_id(cls, id):
         try:
-            count, obj_dict = Site.objects.filter(id=id).delete()
-            return count > 0
-        except Exception as e:
+            result = Site.objects.get(id=id).delete()
+            return True
+        except cls.DoesNotExist as e:
             print('Удаление ссылки не удалось.' + str(e))
             return None
+
+    @property
+    def task_is_running(self):
+        return RunningTask.objects.filter(site=self).exists()
+
+    @property
+    def is_task_out_of_date(self):
+        if self.task_is_running:
+            start_time = RunningTask.objects.get(site=self).start_time
+            delta_time = timezone.now() - start_time
+            return delta_time > TASK_TIMEOUT
+        else:
+            return False
 
     def run_task_for_price(self):
         pass
@@ -64,5 +78,21 @@ class Price(models.Model):
         cls.objects.create(site=site, price=price, date=timezone.now())
 
 
-# class RunningTask(models.Model):
-#     site = models.OneToOneField(Site)
+class RunningTask(models.Model):
+    """Задача обновления данных сайта"""
+    site = models.OneToOneField(Site, on_delete=models.CASCADE)
+    start_time = models.DateTimeField(verbose_name='Время начала задачи')
+
+    @classmethod
+    def create_task_for_site(cls, site):
+        cls.objects.create(site=site, start_time=timezone.now())
+
+    @classmethod
+    def delete_task_for_site(cls, site):
+        task = None
+        try:
+            task = cls.objects.get(site=site)
+        except cls.DoesNotExist:
+            print(f'Задача для сайта с id={site.id} не была найдена!')
+            return
+        task.delete()

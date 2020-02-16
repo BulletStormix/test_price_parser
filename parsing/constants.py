@@ -3,6 +3,7 @@ from collections import namedtuple
 
 from config.settings import GOODS_IMAGE_PATH
 
+TASK_TIMEOUT = 3 * 60
 PRICE_NOT_FOUNDED = 'Цена не найдена'
 DEFAULT_IMG_PATH = os.path.join(GOODS_IMAGE_PATH, 'default.jpg')
 link_to_index_page = "<a href='/'>Вернуться на главную страницу</a>"
