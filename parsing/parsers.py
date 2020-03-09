@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 
 from config.settings import ADDITIONAL_FILES_DIR
 from parsing.exceptions import *
-from parsing.settings import DEFAULT_IMG_PATH, GOODS_IMAGE_PATH
+from parsing.settings import GOODS_IMAGE_PATH
 from parsing.site_config import all_sites_config, SiteConfigException
 from .constants import (
     IdentifierEnum, PageParserEnum, SeleniumSettings, TypeAndId)
@@ -320,7 +320,7 @@ class PhotoDownloader:
         for f in self.supported_formats:
             if url_path.endswith(f):
                 return f
-        raise UnsupportedFileFormat()
+        raise UnsupportedFileFormat(url_path)
 
     @staticmethod
     def generate_file_name(img_format):
@@ -376,5 +376,5 @@ class PhotoDownloader:
         except (PhotoDownloaderException, requests.RequestException) as e:
             error = e
 
-        photo_path = file_name if success else DEFAULT_IMG_PATH
+        photo_path = file_name if success else None
         return success, photo_path, error

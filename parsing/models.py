@@ -22,10 +22,11 @@ class Site(models.Model):
 
     @transaction.atomic
     def add_price_and_photo(self, price, photoname):
-        if price and photoname:
+        if price:
             Price.add(site=self, price=price)
-            self.photo_path = photoname
-            self.save()
+            if photoname:
+                self.photo_path = photoname
+                self.save()
             return True
         else:
             print(f'Цена - {price}  и фото - {photoname} '
