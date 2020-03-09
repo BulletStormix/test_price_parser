@@ -18,7 +18,7 @@ class Site(models.Model):
     @property
     def last_price(self):
         prices = self.get_prices()
-        return prices.first() if prices.exists() else None
+        return prices.first()
 
     @transaction.atomic
     def add_price_and_photo(self, price, photoname):
@@ -45,10 +45,10 @@ class Site(models.Model):
     @classmethod
     def delete_by_id(cls, id):
         try:
-            result = Site.objects.get(id=id).delete()
+            Site.objects.get(id=id).delete()
             return True
         except cls.DoesNotExist as e:
-            print('Удаление ссылки не удалось.' + str(e))
+            print('Сайт с таким id не был найден. Удаление не выполнено.')
             return None
 
     @property

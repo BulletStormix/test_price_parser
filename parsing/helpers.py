@@ -1,7 +1,9 @@
 import time
 from datetime import datetime
 
-from .constants import DEFAULT_IMG_PATH
+from django.db import transaction
+
+from .settings import DEFAULT_IMG_PATH
 from .forms import LinkForm
 from .models import Site, RunningTask
 from .parsers import Parsing
@@ -71,6 +73,7 @@ class SiteTaskContextManager:
         print('---------------------------------------------')
 
 
+@transaction.atomic
 def run_price_task(site_id):
     """Запускает задачу по обновлению цены и фото для сайта"""
 

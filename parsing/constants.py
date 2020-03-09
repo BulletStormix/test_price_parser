@@ -1,11 +1,9 @@
-import os
+
 from collections import namedtuple
 
-from config.settings import GOODS_IMAGE_PATH
 
 TASK_TIMEOUT = 3 * 60
 PRICE_NOT_FOUNDED = 'Цена не найдена'
-DEFAULT_IMG_PATH = os.path.join(GOODS_IMAGE_PATH, 'default.jpg')
 link_to_index_page = "<a href='/'>Вернуться на главную страницу</a>"
 
 
@@ -22,12 +20,18 @@ class IdentifierEnum(BaseEnumerate):
     class_ = 1
     xpath = 2
     tag = 3
+    attr = 4
+    text = 5
+    num = 6
 
     values = {
         'id': id,
         'class_': class_,
         'xpath': xpath,
         'tag': tag,
+        'attr': attr,
+        'text': text,
+        'num': num,
     }
 
 
@@ -42,3 +46,5 @@ class PageParserEnum(BaseEnumerate):
 
 
 TypeAndId = namedtuple('TypeAndId', ['type', 'id'])
+SeleniumSettings = namedtuple(
+    'SeleniumSettings', ['webdriver_class', 'option_class', 'path'])
