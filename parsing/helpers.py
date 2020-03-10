@@ -3,10 +3,10 @@ from datetime import datetime
 
 from django.db import transaction
 
+from parsing.parsers import Parsing
 from .settings import DEFAULT_IMG_PATH
 from .forms import LinkForm
 from .models import Site, RunningTask
-from .parsers import Parsing
 
 
 def get_sites_and_url_form():

@@ -1,6 +1,6 @@
 from configparser import ConfigParser
 
-from parsing.constants import IdentifierEnum, TypeAndId, PageParserEnum
+from parsing.parsers.constants import IdentifierEnum, TypeAndId, PageParserEnum
 from parsing.site_config.exceptions import SiteConfigException
 
 

@@ -1,4 +1,4 @@
-from parsing.exceptions import BaseParsingException
+from parsing.parsers.exceptions import BaseParsingException
 
 
 class SiteConfigException(BaseParsingException):
