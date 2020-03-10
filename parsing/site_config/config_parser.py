@@ -1,7 +1,8 @@
 from configparser import ConfigParser
 
+from django.core.exceptions import ImproperlyConfigured
+
 from parsing.parsers.constants import IdentifierEnum, TypeAndId, PageParserEnum
-from parsing.site_config.exceptions import SiteConfigException
 
 
 class SiteConfig:
@@ -45,26 +46,26 @@ class ConfigParseHelper:
         """Возвращает id парсера
         :param string: Строка с названием парсера
         :return: id парсера
-        :raise: SiteConfigException
+        :raise: ImproperlyConfigured
         """
         for name, parser_id in PageParserEnum.values.items():
             if name.upper() == string.upper():
                 return parser_id
-        raise SiteConfigException(f'Указан некорректный тип парсера {string}')
+        raise ImproperlyConfigured(f'Указан некорректный тип парсера {string}')
 
     @classmethod
     def get_identifier(cls, string):
         """Находит идентификатор в начале строки или генерирует ошибку
         :param string: Строка с идентификатором и параметром функции
         :type string: str
-        :raise: SiteConfigException
+        :raise: ImproperlyConfigured
         """
         assert string, "Строка пуста!"
 
         for key, value in cls.str_to_identifier.items():
             if string.startswith(key):
                 return key, value
-        raise SiteConfigException(
+        raise ImproperlyConfigured(
             f'Идентификатор не был найден в начале строки "{string}"')
 
 
@@ -76,14 +77,14 @@ class SiteConfigParser(ConfigParser):
 
     def check_required_fields(self):
         """Проверка наличия всех необходимых полей
-        :raise: SiteConfigException"""
+        :raise: ImproperlyConfigured"""
 
         error_message = ('Обязательный параметр {0} отсутствует '
                          'в секции {1} конфигурации')
         for section in self.sections():
             for field in ConfigParseHelper.required_fields:
                 if field not in self[section].keys():
-                    raise SiteConfigException(
+                    raise ImproperlyConfigured(
                         error_message.format(field, section))
 
     @staticmethod
@@ -108,13 +109,13 @@ class SiteConfigParser(ConfigParser):
 
     def check_config_parentheses(self):
         """Проверка, что все скобки в файле конфигурации имеют пару (закрыты)
-        :raise: SiteConfigException
+        :raise: ImproperlyConfigured
         """
         for section in self.sections():
             for field, value in self[section].items():
                 result = self.check_parentheses_in_string(value)
                 if not result:
-                    raise SiteConfigException(
+                    raise ImproperlyConfigured(
                         f'В cекции {section} в параметре {field} '
                         f'неверно расставлены скобки')
 
@@ -125,7 +126,7 @@ class SiteConfigParser(ConfigParser):
         :param element: Строка со скобками
         :param key: Обрабатываемый параметр
         :param parentheses: Скобки '()' или '[]'
-        :raise: SiteConfigException
+        :raise: ImproperlyConfigured
         """
         assert parentheses in ['()', '[]'], 'Неправильно заданы скобки'
         assert element, 'Пустая строка'
@@ -139,23 +140,23 @@ class SiteConfigParser(ConfigParser):
 
         # Если внутри скобок пусто
         if not param:
-            raise SiteConfigException(
+            raise ImproperlyConfigured(
                 f'Некорректно указаны параметры для идентификатора {key}')
 
         if parentheses == '()':
             return param
         elif parentheses == '[]':
             return cls.process_path_to_element(param)
-        raise SiteConfigException('Произошла ошибка при обработке параметров!')
+        raise ImproperlyConfigured('Произошла ошибка при обработке параметров!')
 
     @classmethod
     def process_one_identifier(cls, element):
         """Обрабатывает один идентификатор (часть пути к элементу сайта)
-        :raise: SiteConfigException
+        :raise: ImproperlyConfigured
         """
 
         if not element:
-            raise SiteConfigException(
+            raise ImproperlyConfigured(
                 f'Некорректная конфигурация сайта!')
 
         # Получение идентификатора, с которого начинается строка
@@ -166,7 +167,7 @@ class SiteConfigParser(ConfigParser):
         # Проверка необходимости параметров
         if key in ConfigParseHelper.no_need_for_param:
             if len(element) > 0:
-                raise SiteConfigException(
+                raise ImproperlyConfigured(
                     f'Посторонние символы после идентификатора {key}')
             return identifier, None
 
@@ -176,7 +177,7 @@ class SiteConfigParser(ConfigParser):
     @classmethod
     def process_path_to_element(cls, element_path):
         """Обрабатывает пути к элементам сайта, которые необходимо получить
-        :raise: SiteConfigException
+        :raise: ImproperlyConfigured
         """
         source = []
         # Удаляем пробелы
@@ -186,7 +187,7 @@ class SiteConfigParser(ConfigParser):
         if element_path.find('[') != -1 and element_path.find('];') != -1:
             index = element_path.find('];')
             if len(element_path) <= index + 2:
-                raise SiteConfigException(
+                raise ImproperlyConfigured(
                     f'Некорректно указаны параметры для идентификатора')
             param = cls.get_param_in_parentheses(element_path[:index + 1], '[]')
             source.append(param)

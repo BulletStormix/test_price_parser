@@ -8,7 +8,6 @@ from config.settings import ADDITIONAL_FILES_DIR
 
 from parsing.parsers.base_parser import PageParser
 from parsing.parsers.helpers import open_parser
-from parsing.site_config import SiteConfigException
 from .constants import IdentifierEnum, SeleniumSettings
 from .exceptions import *
 
@@ -110,7 +109,7 @@ class SeleniumPageParser(PageParser):
         :type elem_src: TypeAndId
         :param elem_src: Функция для получения идентификатора
         :return args, kwargs: Неименованные/именованные аргументы для функции
-        :raise SiteConfigException
+        :raise BaseParsingException
         """
         args = []
         kwargs = {}
@@ -119,7 +118,7 @@ class SeleniumPageParser(PageParser):
                 kwargs['elem_list'] = self.where
                 kwargs['num'] = int(elem_src.id)
             except ValueError:
-                raise SiteConfigException('Некорректный параметр!')
+                raise BaseParsingException('Некорректный параметр!')
         elif function == getattr and elem_src.type == IdentifierEnum.text:
             args = [self.where, 'text', None]
         else:
