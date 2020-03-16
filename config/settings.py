@@ -11,10 +11,14 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ADDITIONAL_FILES_DIR = os.path.join(BASE_DIR, 'additional_files')
+PROJECT_SETTINGS_DIR = os.getenv('PROJECT_SETTINGS_DIR', None)
+if not PROJECT_SETTINGS_DIR or not os.path.exists(PROJECT_SETTINGS_DIR):
+    raise ImproperlyConfigured('Не задана переменная среды PROJECT_SETTINGS_DIR')
 
 
 # Quick-start development settings - unsuitable for production
