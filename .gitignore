@@ -6,3 +6,4 @@ __pycache__
 /config/site_config.txt
 /static/goods_images/
 /reserve/
+/price_parser/site_config.txt
